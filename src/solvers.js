@@ -48,6 +48,11 @@ window.countNRooksSolutions = function(n) {
     }
     //for each row in the board
     for ( var currRow = 0 ; currRow < n ; currRow++ ) {
+      // if we're over 1/2 way for even n
+      if( n % 2 === 0 && (currCol === 0 && (currRow === (n/2)))){
+        solutionCount *= 2;
+        return;
+      }
       //add a piece to the currentRow and currCol
       testBoard.togglePiece(currRow, currCol);
       //test if this is a valid board
