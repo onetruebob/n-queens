@@ -61,7 +61,7 @@ window.countNRooksSolutions = function(n) {
   };
   countWinners(0);
 
-  var endTime = (new Date()).getTime();
+  // var endTime = (new Date()).getTime();
 
   console.log('Number of solutions for ' + n + ' rooks:', solutionCount);
   // console.log('Time: ' + (endTime - startTime) );
@@ -73,8 +73,42 @@ window.countNRooksSolutions = function(n) {
 
 // return a matrix (an array of arrays) representing a single nxn chessboard, with n queens placed such that none of them can attack each other
 window.findNQueensSolution = function(n) {
-  var solution = undefined; //fixme
+  var solution;
 
+  //Generate empty board of size n x n
+  var testBoard = new Board({'n': n});
+
+
+
+  var countWinners = function (currCol){
+    // if currCol is equal to n
+    if ( currCol === n ) {
+      // This is a valid board, increment the solution count
+      // and return
+      return testBoard;
+    }
+    //for each row in the board
+    for ( var currRow = 0 ; currRow < n ; currRow++ ) {
+      //add a piece to the currentRow and currCol
+      testBoard.togglePiece(currRow, currCol);
+      //test if this is a valid board
+      if ( !testBoard.hasAnyQueensConflicts() ) {
+        // if it recurse for column + 1
+        var result = countWinners(currCol + 1);
+        if(result !== null) { return result;}
+      }
+      // toggle off piece at currentRow and currCol
+      testBoard.togglePiece(currRow, currCol);
+    }
+    return null;
+  };
+
+
+  if(n === 2 || n === 3) {
+    solution = testBoard.rows();
+  } else {
+    solution = countWinners(0).rows();
+  }
   console.log('Single solution for ' + n + ' queens:', JSON.stringify(solution));
   return solution;
 };
@@ -82,7 +116,37 @@ window.findNQueensSolution = function(n) {
 
 // return the number of nxn chessboards that exist, with n queens placed such that none of them can attack each other
 window.countNQueensSolutions = function(n) {
-  var solutionCount = undefined; //fixme
+  var solutionCount = 0;
+
+  //Generate empty board of size n x n
+  var testBoard = new Board({'n': n});
+
+  var countWinners = function (currCol){
+    // if currCol is equal to n
+    if ( currCol === n ) {
+      // This is a valid board, increment the solution count
+      // and return
+      solutionCount++;
+      return;
+    }
+    //for each row in the board
+    for ( var currRow = 0 ; currRow < n ; currRow++ ) {
+      //add a piece to the currentRow and currCol
+      testBoard.togglePiece(currRow, currCol);
+      //test if this is a valid board
+      if ( !testBoard.hasAnyQueensConflicts() ) {
+        // if it recurse for column + 1
+        countWinners(currCol + 1);
+      }
+      // toggle off piece at currentRow and currCol
+      testBoard.togglePiece(currRow, currCol);
+    }
+  };
+
+
+  if(n !== 2 && n !== 3) {
+    countWinners(0);
+  }
 
   console.log('Number of solutions for ' + n + ' queens:', solutionCount);
   return solutionCount;
