@@ -30,59 +30,42 @@ window.findNRooksSolution = function(n) {
 
 // return the number of nxn chessboards that exist, with n rooks placed such that none of them can attack each other
 window.countNRooksSolutions = function(n) {
-  var makeCandidateRows = function (n) {
-    var rows = [];
-    var row;
 
-    for (var i = 0 ; i < n; i++) {
-      row = [];
-      for( var j = 0; j < n; j++) {
-        row[j] = i === j ? 1 : 0;
-      }
-      rows[i] = row;
+  // var startTime = (new Date()).getTime();
+
+  var solutionCount = 0;
+
+  //Generate empty board of size n x n
+  var testBoard = new Board({'n': n});
+
+  var countWinners = function (currCol){
+    // if currCol is equal to n
+    if ( currCol === n ) {
+      // This is a valid board, increment the solution count
+      // and return
+      solutionCount++;
+      return;
     }
-
-    return rows;
+    //for each row in the board
+    for ( var currRow = 0 ; currRow < n ; currRow++ ) {
+      //add a piece to the currentRow and currCol
+      testBoard.togglePiece(currRow, currCol);
+      //test if this is a valid board
+      if ( !testBoard.hasAnyRooksConflicts() ) {
+        // if it recurse for column + 1
+        countWinners(currCol + 1);
+      }
+      // toggle off piece at currentRow and currCol
+      testBoard.togglePiece(currRow, currCol);
+    }
   };
+  countWinners(0);
 
-  var candidateRows = makeCandidateRows(n);
-
-  var getBoardsForDepth = function(depth) {
-
-    var boardsCollection = [];
-
-    if ( depth === 1 ) {
-      for ( var i = 0 ; i < candidateRows.length ; i++ ) {
-        boardsCollection.push([candidateRows[i]]);
-      }
-      return boardsCollection;
-    }
-
-    // for each row in candidate rows
-    for ( var row = 0 ; row < candidateRows.length ; row++ ) {
-      // get boards from previous depth  (depth-1)
-      var previousBoards = getBoardsForDepth(depth-1);
-      var noConflictBoards = [];
-      // for each board in boards
-      for ( var board = 0 ; board < previousBoards.length ; board++ ) {
-        // add the row
-        previousBoards[board].push(candidateRows[row]);
-        var testBoard = new Board(previousBoards[board]);
-        if ( !testBoard.hasAnyColConflicts() && !testBoard.hasAnyRowConflicts() ) {
-          noConflictBoards.push(previousBoards[board]);
-        }
-      }
-      // push boards onto our boardsCollection
-      boardsCollection = boardsCollection.concat(noConflictBoards);
-    }
-    return boardsCollection;
-  };
-
-  var candidateBoards = getBoardsForDepth(n);
-
-  var solutionCount = candidateBoards.length;
+  var endTime = (new Date()).getTime();
 
   console.log('Number of solutions for ' + n + ' rooks:', solutionCount);
+  // console.log('Time: ' + (endTime - startTime) );
+  // debugger;
   return solutionCount;
 };
 
