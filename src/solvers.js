@@ -48,7 +48,9 @@ window.countNRooksSolutions = function(n) {
   var candidateRows = makeCandidateRows(n);
 
   var getBoardsForDepth = function(depth) {
+
     var boardsCollection = [];
+
     if ( depth === 1 ) {
       for ( var i = 0 ; i < candidateRows.length ; i++ ) {
         boardsCollection.push([candidateRows[i]]);
@@ -60,19 +62,25 @@ window.countNRooksSolutions = function(n) {
     for ( var row = 0 ; row < candidateRows.length ; row++ ) {
       // get boards from previous depth  (depth-1)
       var previousBoards = getBoardsForDepth(depth-1);
-        // for each board in boards
+      var noConflictBoards = [];
+      // for each board in boards
       for ( var board = 0 ; board < previousBoards.length ; board++ ) {
         // add the row
         previousBoards[board].push(candidateRows[row]);
+        var testBoard = new Board(previousBoards[board]);
+        if ( !testBoard.hasAnyColConflicts() && !testBoard.hasAnyRowConflicts() ) {
+          noConflictBoards.push(previousBoards[board]);
+        }
       }
       // push boards onto our boardsCollection
-      boardsCollection = boardsCollection.concat(previousBoards);
+      boardsCollection = boardsCollection.concat(noConflictBoards);
     }
     return boardsCollection;
   };
-  debugger;
 
-  var solutionCount = undefined; //fixme
+  var candidateBoards = getBoardsForDepth(n);
+
+  var solutionCount = candidateBoards.length;
 
   console.log('Number of solutions for ' + n + ' rooks:', solutionCount);
   return solutionCount;
