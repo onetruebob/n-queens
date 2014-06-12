@@ -116,12 +116,16 @@ window.findNQueensSolution = function(n) {
 
 // return the number of nxn chessboards that exist, with n queens placed such that none of them can attack each other
 window.countNQueensSolutions = function(n) {
+
+  var startTime = (new Date()).getTime();
+
   var solutionCount = 0;
 
   //Generate empty board of size n x n
   var testBoard = new Board({'n': n});
 
   var countWinners = function (currCol){
+
     // if currCol is equal to n
     if ( currCol === n ) {
       // This is a valid board, increment the solution count
@@ -131,6 +135,11 @@ window.countNQueensSolutions = function(n) {
     }
     //for each row in the board
     for ( var currRow = 0 ; currRow < n ; currRow++ ) {
+      // if we're over 1/2 way for even n
+      if( n % 2 === 0 && (currCol === 0 && (currRow === (n/2)))){
+        solutionCount *= 2;
+        return;
+      }
       //add a piece to the currentRow and currCol
       testBoard.togglePiece(currRow, currCol);
       //test if this is a valid board
@@ -148,6 +157,9 @@ window.countNQueensSolutions = function(n) {
     countWinners(0);
   }
 
+  var endTime = (new Date()).getTime();
+
   console.log('Number of solutions for ' + n + ' queens:', solutionCount);
+  console.log('Time: ' + (endTime - startTime) );
   return solutionCount;
 };
