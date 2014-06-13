@@ -79,13 +79,29 @@
     //
     // test if a specific row on this board contains a conflict
     hasRowConflictAt: function(rowIndex) {
+      // Experiment with bitwise solition to finding row conflicts
+      var stringToBit = function (arr){
+        // if (arr[0] === 1 && arr[1] === 1) {
+        //   debugger;
+        // }
+        var bitwise = 0;
+        for (var i = 0; i < arr.length; i++) {
+          bitwise = bitwise << 1;
+          bitwise = bitwise | arr[i];
+        }
+        return bitwise;
+      };
+
       var rows = this.rows();
-      var currentRow = rows[rowIndex];
-      var pieceCount = 0;
-      for (var i = 0; i<currentRow.length; i++) {
-        currentRow[i] === 1 ? pieceCount++ : null ;
+      var bitwiseRow = stringToBit(rows[rowIndex]);
+
+      if (bitwiseRow === 0) {
+        return false;
+      } else if (bitwiseRow === 1) {
+        return false;
+      } else {
+        return !((bitwiseRow & (bitwiseRow - 1)) === 0);
       }
-      return pieceCount >= 2;
     },
 
     // test if any rows on this board contain conflicts
